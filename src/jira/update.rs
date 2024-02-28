@@ -35,6 +35,10 @@ pub fn update_jira_ticket(ticket: String, key: String, entry: String) {
         eprintln!("Error occurred while updating the ticket.");
         std::process::exit(1);
     }
+    if let Ok(r) = &fields_response {
+        tracing::debug!("fields: {:#}", &r);
+    }
+    tracing::debug!("Update key is: {}", update_key);
     let fields = &fields_response.unwrap()["fields"][update_key.clone()];
     let mut update_json = json::object! {};
     if fields.is_null() {
@@ -82,5 +86,5 @@ pub fn update_jira_ticket(ticket: String, key: String, entry: String) {
         std::process::exit(1);
     }
     let response = update_response.unwrap();
-    println!("Successfully Updated {response}");
+    println!("Successfully Updated {response:#}");
 }

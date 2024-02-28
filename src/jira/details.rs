@@ -65,6 +65,9 @@ pub fn show_details(ticket: String, fields: String) {
         eprintln!("Error occurred when searching tickets. ");
         std::process::exit(1);
     }
+    if let Ok(r) = &details_response {
+        tracing::debug!("details_resp: {:#}", &r);
+    }
 
     let fields_list = fields_expanded.trim().split(',');
     let detail_object = details_response.unwrap();

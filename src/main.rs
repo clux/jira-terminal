@@ -29,11 +29,25 @@ pub mod config;
 pub mod jira;
 pub mod subcommands;
 
+use anyhow::Result;
+
+fn init_env_tracing_stderr() -> Result<()> {
+    use std::io::stderr;
+    use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
+    let logger = tracing_subscriber::fmt::layer()
+        .compact()
+        .with_writer(stderr);
+    let env_filter = EnvFilter::try_from_default_env().or(EnvFilter::try_new("info"))?;
+    let collector = Registry::default().with(logger).with(env_filter);
+    Ok(tracing::subscriber::set_global_default(collector)?)
+}
+
 fn main() {
+    init_env_tracing_stderr().unwrap();
     config::ensure_config();
     let app = App::new("JIRA Terminal")
         .version(crate_version!())
-        .author("Amrit Ghimire <oss@amritghimire.com>")
+        .author("EA FORK")
         .about("This is a command line application that can be used as a personal productivity tool for interacting with JIRA")
         .subcommand(subcommands::transition::subcommand())
         .subcommand(subcommands::list::subcommand())
